@@ -94,6 +94,16 @@ define([
       });
   }
 
+  function deleteRepoForProject(projectId) {
+    var project = projectsService.getProject(projectId);
+    var repo = project.name;
+
+    gitService.remove(repo)
+      .fail(function (err) {
+	console.log('GIT: can\'t remove project', project.name, ':', err);
+      });
+  }
+
   return {
     run : [
       'git-service', 'projects-service', 'file-service', 'content-type-service',
@@ -105,7 +115,8 @@ define([
 	fileService = fileS;
 	contentTypeService = contentTypeS;
 
-	eventBus.vent.on('project:created', createRepoForProject)
+	eventBus.vent.on('project:created', createRepoForProject);
+	eventBus.vent.on('project:deleted', deleteRepoForProject);
       }
     ],
   };
