@@ -116,7 +116,26 @@ define([
 	contentTypeService = contentTypeS;
 
 	eventBus.vent.on('project:created', createRepoForProject);
+	eventBus.vent.on('project:renamed', function (e) {
+	  console.error('GIT service: missed project:renamed event:', e);
+	});
 	eventBus.vent.on('project:deleted', deleteRepoForProject);
+	eventBus.vent.on('project:item:created', function (project, fileItem) {
+	  console.error('GIT service: missed project:item:created event:',
+	    {project: project, fileItem: fileItem});
+	});
+	eventBus.vent.on('project:item:renamed', function (project, fileItem, oldId, newId) {
+	  console.error('GIT service: missed project:item:renamed event:',
+	    {project: project, fileItem: fileItem, oldId: oldId, newId: newId});
+	});
+	eventBus.vent.on('project:item:saved', function (itemId) {
+	  console.error('GIT service: missed project:item:saved event:',
+	    {itemId: itemId});
+	});
+	eventBus.vent.on('project:item:deleted', function (project, itemId) {
+	  console.error('GIT service: missed project:item:deleted event:',
+	    {project: project, itemId: itemId});
+	});
       }
     ],
   };
