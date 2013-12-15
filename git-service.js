@@ -35,6 +35,17 @@ define([
     });
   }
 
+  function remove(repo) {
+    console.log('git remove:', {repo: repo});
+
+    return $.ajax({
+      type: 'DELETE',
+      url: getBaseUrl(repo),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+    });
+  }
+
   function commit(repo, message, allowEmpty) {
     var params = {
       message: message,
@@ -108,6 +119,7 @@ define([
 	var gitService = {
           init: init,
           clone: clone,
+	  remove: remove,
           commit: commit,
           addFile: addFile,
           readFile: readFile,
