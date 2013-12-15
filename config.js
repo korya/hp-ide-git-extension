@@ -8,6 +8,11 @@ define({
       id: 'git-service',
       main: 'git-service',
       dependencies:[]
+    },
+    {
+      id: 'git-project-service-hooks',
+      main: 'project-service-hooks',
+      dependencies:[]
     }
   ]
 });
