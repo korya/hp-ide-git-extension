@@ -111,6 +111,29 @@ define([
     });
   }
 
+  function moveFile(repo, oldPath, newPath) {
+    console.log('git move:', {repo: repo, src: oldPath, dst: newPath});
+
+    return $.ajax({
+      type: 'POST',
+      url: getBaseUrl(repo) + '/mv',
+      data: JSON.stringify({ source: oldPath, destination: newPath}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    });
+  }
+
+  function removeFile(repo, filepath) {
+    console.log('git remove:', {repo: repo, path: filepath});
+
+    return $.ajax({
+      type: 'DELETE',
+      url: getTreeUrl(repo, filepath),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+    });
+  }
+
   return {
     init: function (extModule) {
       var deferred = $.Deferred();
@@ -124,6 +147,8 @@ define([
           addFile: addFile,
           readFile: readFile,
           showFile: showFile,
+	  moveFile: moveFile,
+	  removeFile: removeFile,
 	};
 	this.$get = function () {
 	  return gitService;
