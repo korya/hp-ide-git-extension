@@ -72,7 +72,7 @@ define([
     /* XXX At this point the project has no structure, thus we have to read its
      * from file service
      */
-    var repo = project.name;
+    var repo = project.id;
     var projectDir = project.projectDirectory;
 
     gitService.init(repo)
@@ -95,8 +95,7 @@ define([
   }
 
   function deleteRepoForProject(projectId) {
-    var project = projectsService.getProject(projectId);
-    var repo = project.name;
+    var repo = projectId;
 
     gitService.remove(repo)
       .fail(function (err) {
