@@ -64,6 +64,15 @@ define([
     });
   }
 
+  function log(repo) {
+    console.log('git log:', {repo: repo});
+
+    return $.ajax({
+      type: 'GET',
+      url: getBaseUrl(repo) + '/log',
+    });
+  }
+
   function addFile(repo, filepath, content) {
     function wrapContent(boundary, filename, content) {
       var str = '';
@@ -144,6 +153,7 @@ define([
           clone: clone,
 	  remove: remove,
           commit: commit,
+	  log: log,
           addFile: addFile,
           readFile: readFile,
           showFile: showFile,
