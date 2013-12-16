@@ -64,6 +64,15 @@ define([
     });
   }
 
+  function commitShow(repo, sha1) {
+    console.log('git show commit:', {repo: repo, sha1: sha1});
+
+    return $.ajax({
+      type: 'GET',
+      url: getBaseUrl(repo) + '/commit/' + sha1,
+    });
+  }
+
   function log(repo) {
     console.log('git log:', {repo: repo});
 
@@ -153,6 +162,7 @@ define([
           clone: clone,
 	  remove: remove,
           commit: commit,
+          commitShow: commitShow,
 	  log: log,
           addFile: addFile,
           readFile: readFile,
