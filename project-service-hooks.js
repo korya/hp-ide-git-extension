@@ -159,7 +159,73 @@ define([
     gitService.removeFile(repo, relPath);
   }
 
+  function createCommitDialog(dialogService, gitService, project) {
+    var repo = project.id;
+    var $message = $('<input type="text">');
+    var $empty = $('<input type="checkbox">');
+    var $error = $('<span style="color: red;">');
+    var dialogParams = {
+      closeOnEscape: true,
+      draggable: true,
+      modal: true,
+      width: '400'
+    };
+    var dialog = dialogService.createDialog('Commit', dialogParams, [
+      {
+	label: 'Commit',
+	title: 'Commit',
+	handler: function() {
+	  var message = $message.val();
+	  var allowEmpty = $empty.is(':checked');
+	  gitService.commit(repo, message, allowEmpty).then(function () {
+	    dialog.close();
+	  }, function (err) {
+	    $error.text(err.responseJSON.error);
+	    $error.show();
+	  });
+	},
+      },
+      {
+	label: 'Cancel',
+	title: 'Cancel',
+	handler: function() { dialog.close(); }
+      }
+    ], function (dialog) {
+      $(dialog.getDomElement())
+        .append(
+	  $('<div>').append($('<label>Commit Message:</label>')).append($message)
+	)
+        .append(
+	  $('<div>').append($('<label>Allow empty commit:</label>')).append($empty)
+	)
+        .append( $('<div>').append($error) );
+      $error.hide();
+    });
+  }
+
   return {
+    config: [
+      'commands-serviceProvider', 'conditions-serviceProvider', 'menu-serviceProvider',
+      function (commandsProvider, conditionsProvider, menuProvider) {
+	commandsProvider.register(
+	  'git.commit',
+	  ['dialog-service', 'git-service', 'projects-service',
+	  function (dialogService, gitService, projectsService) {
+	    return function () {
+	      var project = projectsService.getActiveProject();
+	      createCommitDialog(dialogService, gitService, project);
+	    };
+	  }], conditionsProvider.ALWAYS_ON);
+
+	menuProvider.registerMenuItem({
+	  id : 'git.commit',
+	  title : 'Git Commit',
+	  parentId : 'coreMainMenuProject',
+	  order : -1,
+	  commandId : 'git.commit'
+	});
+      }
+    ],
     run : [
       'git-service', 'projects-service', 'file-service', 'content-type-service',
       function(gitS, projectsS, fileS, contentTypeS) {
