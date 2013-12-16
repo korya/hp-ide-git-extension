@@ -7,6 +7,31 @@ define([
       contentTypeService,
       fileService;
 
+  function getRelativePath(absPath, rootDir) {
+    if (absPath.indexOf(rootDir) === -1) return null; // Crush it!
+    return absPath.substr(rootDir.length);
+  }
+
+  /* XXX copy-paste from projects-service.js */
+  function _buildRootDir() {
+    var _workspaceID = 'workspace',
+	_tenantID = 'tenant',
+	_userID = 'user';
+
+    return '/' + [_workspaceID, _tenantID , _userID].join('/') + '/';
+  }
+
+  function getProjectInfoFromItemId(itemId) {
+    var rootDir = _buildRootDir();
+    console.log('getInfo', {item: itemId, rootDir: rootDir});
+    var id = getRelativePath(itemId, rootDir).split('/').shift();
+
+    return {
+      id: id,
+      projectDirectory: rootDir + id + '/',
+    };
+  }
+
   function readFSFile(filepath) {
     var deferred = new $.Deferred();
 
@@ -34,9 +59,10 @@ define([
     return deferred.promise();
   }
 
-  function gitAddFSFile(repo, file, rootDir) {
-    var relPath = file.fullPath.substr(rootDir.length);
-    return readFSFile(file.fullPath).then(function (data) {
+  function gitAddFSFile(repo, filePath, rootDir) {
+    var relPath = getRelativePath(filePath, rootDir);
+
+    return readFSFile(filePath).then(function (data) {
       return gitService.addFile(repo, relPath, data);
     });
   }
@@ -50,7 +76,7 @@ define([
 
     var children = [];
     for (var i = 0; i < node.files.length; i++) 
-      children.push(gitAddFSFile(repo, node.files[i], rootDir));
+      children.push(gitAddFSFile(repo, node.files[i].fullPath, rootDir));
     for (var i = 0; i < node.directories.length; i++)
       children.push(gitAddFSTree(repo, node.directories[i], rootDir));
     return $.when.apply(null, children);
@@ -103,6 +129,36 @@ define([
       });
   }
 
+  function createFile(project, fileItem) {
+    var repo = project.id;
+
+    if (fileItem.isFolder) return;
+
+    gitAddFSFile(repo, fileItem.id, project.projectDirectory);
+  }
+
+  function moveFile(project, fileItem, oldId, newId) {
+    var oldPath = getRelativePath(oldId, project.projectDirectory);
+    var newPath = getRelativePath(newId, project.projectDirectory);
+    var repo = project.id;
+
+    gitService.moveFile(repo, oldPath, newPath);
+  }
+
+  function saveFile(itemId) {
+    var info = getProjectInfoFromItemId(itemId);
+    var repo = info.id;
+
+    gitAddFSFile(repo, itemId, info.projectDirectory);
+  }
+
+  function deleteFile(project, itemId) {
+    var repo = project.id;
+    var relPath = getRelativePath(itemId, project.projectDirectory);
+
+    gitService.removeFile(repo, relPath);
+  }
+
   return {
     run : [
       'git-service', 'projects-service', 'file-service', 'content-type-service',
@@ -119,22 +175,10 @@ define([
 	  console.error('GIT service: missed project:renamed event:', e);
 	});
 	eventBus.vent.on('project:deleted', deleteRepoForProject);
-	eventBus.vent.on('project:item:created', function (project, fileItem) {
-	  console.error('GIT service: missed project:item:created event:',
-	    {project: project, fileItem: fileItem});
-	});
-	eventBus.vent.on('project:item:renamed', function (project, fileItem, oldId, newId) {
-	  console.error('GIT service: missed project:item:renamed event:',
-	    {project: project, fileItem: fileItem, oldId: oldId, newId: newId});
-	});
-	eventBus.vent.on('project:item:saved', function (itemId) {
-	  console.error('GIT service: missed project:item:saved event:',
-	    {itemId: itemId});
-	});
-	eventBus.vent.on('project:item:deleted', function (project, itemId) {
-	  console.error('GIT service: missed project:item:deleted event:',
-	    {project: project, itemId: itemId});
-	});
+	eventBus.vent.on('project:item:created', createFile);
+	eventBus.vent.on('project:item:renamed', moveFile);
+	eventBus.vent.on('project:item:saved', saveFile);
+	eventBus.vent.on('project:item:deleted', deleteFile);
       }
     ],
   };
