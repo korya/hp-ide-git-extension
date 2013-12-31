@@ -11,10 +11,30 @@ define([
     return getBaseUrl(repo) + '/tree/' + path;
   }
 
+  function ajax(params) {
+    /* Get rid of jQuery ajax stuff */
+    return $.ajax(params).then(function (res) {
+      return $.when(res);
+    }, function (xhr) {
+      var error = '';
+      if (xhr.responseJSON.error) {
+	error += xhr.responseJSON.error.error;
+	error += '\n\n';
+	error += xhr.responseJSON.error.command;
+	error += '\n\n';
+	error += xhr.responseJSON.error.stackAtCall;
+      } else {
+	error += xhr.responseText;
+      }
+      console.error('GIT ajax error:', {xhr:xhr, error:error, params:params});
+      return $.Deferred().reject(error).promise();
+    });
+  }
+
   function init(repo) {
     console.log('git init:', {repo: repo});
 
-    return $.ajax({
+    return ajax({
       type: 'POST',
       url: getBaseUrl() + '/init',
       data: JSON.stringify({ repo: repo }),
@@ -26,7 +46,7 @@ define([
   function clone(remote, repo) {
     console.log('git clone:', {repo: repo, remote: remote});
 
-    return $.ajax({
+    return ajax({
       type: 'POST',
       url: getBaseUrl() + '/clone',
       data: JSON.stringify({ remote: remote, repo: repo }),
@@ -38,7 +58,7 @@ define([
   function remove(repo) {
     console.log('git remove:', {repo: repo});
 
-    return $.ajax({
+    return ajax({
       type: 'DELETE',
       url: getBaseUrl(repo),
       contentType: "application/json; charset=utf-8",
@@ -55,7 +75,7 @@ define([
 
     console.log('git commit:', {repo: repo, message: message});
 
-    return $.ajax({
+    return ajax({
       type: 'POST',
       url: getBaseUrl(repo) + '/commit',
       data: JSON.stringify(params),
@@ -67,7 +87,7 @@ define([
   function commitShow(repo, sha1) {
     console.log('git show commit:', {repo: repo, sha1: sha1});
 
-    return $.ajax({
+    return ajax({
       type: 'GET',
       url: getBaseUrl(repo) + '/commit/' + sha1,
     });
@@ -76,7 +96,7 @@ define([
   function log(repo) {
     console.log('git log:', {repo: repo});
 
-    return $.ajax({
+    return ajax({
       type: 'GET',
       url: getBaseUrl(repo) + '/log',
     });
@@ -101,7 +121,7 @@ define([
 
     console.log('git add:', {repo: repo, file: filepath});
 
-    return $.ajax({
+    return ajax({
       type: 'PUT',
       url: getTreeUrl(repo, filepath),
       contentType: 'multipart/form-data; boundary=' + boundary,
@@ -112,7 +132,7 @@ define([
   function readFile(repo, filepath) {
     console.log('git read:', {repo: repo, file: filepath});
 
-    return $.ajax({
+    return ajax({
       type: 'GET',
       url: getTreeUrl(repo, filepath),
     });
@@ -123,7 +143,7 @@ define([
 
     console.log('git show:', {repo: repo, file: filepath, revision: revision});
 
-    return $.ajax({
+    return ajax({
       type: 'GET',
       url: getBaseUrl(repo) + '/show/' + filepath + query,
     });
@@ -132,7 +152,7 @@ define([
   function moveFile(repo, oldPath, newPath) {
     console.log('git move:', {repo: repo, src: oldPath, dst: newPath});
 
-    return $.ajax({
+    return ajax({
       type: 'POST',
       url: getBaseUrl(repo) + '/mv',
       data: JSON.stringify({ source: oldPath, destination: newPath}),
@@ -144,7 +164,7 @@ define([
   function removeFile(repo, filepath) {
     console.log('git remove:', {repo: repo, path: filepath});
 
-    return $.ajax({
+    return ajax({
       type: 'DELETE',
       url: getTreeUrl(repo, filepath),
       contentType: 'application/json; charset=utf-8',
