@@ -172,32 +172,25 @@ define([
     });
   }
 
+  var gitService = {
+    init: init,
+    clone: clone,
+    remove: remove,
+    commit: commit,
+    commitShow: commitShow,
+    log: log,
+    addFile: addFile,
+    readFile: readFile,
+    showFile: showFile,
+    moveFile: moveFile,
+    removeFile: removeFile,
+  };
+
   return {
-    init: function (extModule) {
-      var deferred = $.Deferred();
-
-      extModule.provider('git-service',function() {
-	var gitService = {
-          init: init,
-          clone: clone,
-	  remove: remove,
-          commit: commit,
-          commitShow: commitShow,
-	  log: log,
-          addFile: addFile,
-          readFile: readFile,
-          showFile: showFile,
-	  moveFile: moveFile,
-	  removeFile: removeFile,
-	};
-	this.$get = function () {
-	  return gitService;
-	};
-      });
-
-      deferred.resolve();
-
-      return deferred.promise();
+    factorys: {
+      'git-service': function () {
+	return gitService;
+      },
     },
   };
 });
