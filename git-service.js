@@ -2,9 +2,12 @@ define([
 ], function() {
   'use strict';
 
+  var REST_API_URL = '/services/rest/v1';
+  var GIT_SERVICE_URL = REST_API_URL + '/git';
+
   function getBaseUrl(repo) {
-    if (!repo) return '/git';
-    return '/git/' + repo;
+    if (!repo) return GIT_SERVICE_URL;
+    return GIT_SERVICE_URL + '/' + repo;
   }
 
   function getTreeUrl(repo, path) {
