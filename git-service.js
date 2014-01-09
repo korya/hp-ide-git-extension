@@ -20,16 +20,19 @@ define([
       return $.when(res);
     }, function (xhr) {
       var error = '';
-      if (xhr.responseJSON.error) {
+      if (xhr.responseJSON && xhr.responseJSON.error) {
 	error += xhr.responseJSON.error.error;
 	error += '\n\n';
 	error += xhr.responseJSON.error.command;
 	error += '\n\n';
 	error += xhr.responseJSON.error.stackAtCall;
-      } else {
+      } else if (xhr.responseText) {
 	error += xhr.responseText;
+      } else {
+	error += xhr.status + ': ' + xhr.statusText;
       }
-      console.error('GIT ajax error:', {xhr:xhr, error:error, params:params});
+      console.error('GIT ajax error:', xhr.status,
+	{xhr:xhr, error:error, params:params});
       return $.Deferred().reject(error).promise();
     });
   }
