@@ -178,9 +178,45 @@ define([
     });
   }
 
+  function getRemotes(repo) {
+    console.log('git get remotes:', {repo:repo});
+
+    return ajax({
+      type: 'GET',
+      url: getBaseUrl(repo) + '/remote',
+    });
+  }
+
+  function addRemote(repo, remoteName, remoteUrl) {
+    console.log('git add remote:', {repo:repo, name:remoteName, url:remoteUrl});
+
+    return ajax({
+      type: 'POST',
+      url: getBaseUrl(repo) + '/remote',
+      data: JSON.stringify({ name:remoteName, url:remoteUrl }),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+    });
+  }
+
+  function remRemote(repo, remoteName) {
+    console.log('git rem remote:', {repo:repo, name:remoteName});
+
+    return ajax({
+      type: 'DELETE',
+      url: getBaseUrl(repo) + '/remote',
+      data: JSON.stringify({ name:remoteName }),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+    });
+  }
+
   var gitService = {
     init: init,
     clone: clone,
+    getRemotes: getRemotes,
+    addRemote: addRemote,
+    remRemote: remRemote,
     remove: remove,
     commit: commit,
     commitShow: commitShow,
