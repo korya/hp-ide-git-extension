@@ -7,7 +7,7 @@ define([
 
   function getBaseUrl(repo) {
     if (!repo) return GIT_SERVICE_URL;
-    return GIT_SERVICE_URL + '/' + repo;
+    return GIT_SERVICE_URL + '/repo/' + repo;
   }
 
   function getTreeUrl(repo, path) {
