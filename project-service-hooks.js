@@ -215,7 +215,7 @@ define([
 	      var project = projectsService.getActiveProject();
 	      createCommitDialog(dialogService, gitService, project);
 	    };
-	  }], conditionsProvider.ALWAYS_ON);
+	  }], 'activeProjectCondition');
 
 	menuProvider.registerMenuItem({
 	  id : 'git.commit',
