@@ -217,10 +217,15 @@ define([
 	    };
 	  }], 'activeProjectCondition');
 
+	menuProvider.registerMenu({
+	  id : 'git.menu',
+	  title : 'Git',
+	  parentId : 'coreMainMenuProject'
+	});
 	menuProvider.registerMenuItem({
 	  id : 'git.commit',
 	  title : 'Git Commit',
-	  parentId : 'coreMainMenuProject',
+	  parentId : 'git.menu',
 	  order : -1,
 	  commandId : 'git.commit'
 	});
