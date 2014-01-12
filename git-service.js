@@ -58,13 +58,13 @@ define([
     });
   }
 
-  function clone(remote, repo) {
+  function clone(remote, repo, bare) {
     console.log('git clone:', {repo: repo, remote: remote});
 
     return ajax({
       type: 'POST',
       url: getBaseUrl() + '/clone',
-      data: JSON.stringify({ remote: remote, repo: repo }),
+      data: JSON.stringify({ remote: remote, repo: repo, bare: !!bare }),
       contentType: "application/json; charset=utf-8",
       dataType: "json",
     });
