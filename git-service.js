@@ -37,6 +37,15 @@ define([
     });
   }
 
+  function getLocalRepositories() {
+    console.log('git list repositories');
+
+    return ajax({
+      type: 'GET',
+      url: getBaseUrl() + '/',
+    });
+  }
+
   function init(repo) {
     console.log('git init:', {repo: repo});
 
@@ -212,6 +221,7 @@ define([
   }
 
   var gitService = {
+    getLocalRepositories: getLocalRepositories,
     init: init,
     clone: clone,
     getRemotes: getRemotes,
