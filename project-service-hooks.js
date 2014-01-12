@@ -203,6 +203,107 @@ define([
     });
   }
 
+  function renderRemoteDialog($dialog, gitService, project) {
+    var repo = project.id;
+
+    function renderRemote($table, remote) {
+      var $tr = $('<tr>');
+      var $error = $('<span style="color: red;">');
+      var $btn = $('<button type="button">Remove</button>');
+
+      $btn.click(function () {
+	$btn.attr('disabled', true);
+	$error.hide();
+	gitService.remRemote(repo, remote.name)
+	  .done(function () {
+	    $tr.remove();
+	  })
+	  .fail(function (error) {
+	    $error.text(error);
+	    $error.show();
+	  })
+	  .always(function () {
+	    $btn.attr('disabled', false);
+	  });
+      });
+
+      $tr
+	.append($('<td>').append(remote.name))
+	.append($('<td>').append(remote.url))
+	.append($('<td>').append($btn.css('width', '100%')))
+	.append($('<td>').append($error))
+	.appendTo($table);
+    }
+
+    var $table = $('<table>').css('width', '500px');
+      
+    $('<tr>')
+      .append($('<th>Name</th>').css('width', '130px'))
+      .append($('<th>URL</th>').css('width', '300px'))
+      .append($('<th></th>').css('width', '70px'))
+      .appendTo($table);
+
+    gitService.getRemotes(repo).done(function (remotes) {
+      console.error('rs:', remotes);
+      _.forEach(remotes, function (remote) {
+	renderRemote($table, remote);
+      });
+    });
+
+    var $name = $('<input type="text">').css('width', '130px');
+    var $url = $('<input type="text">').css('width', '300px');
+    var $error = $('<span style="color: red;">');
+    var $btn = $('<button type="button">Add</button>').css('width', '70px');
+
+    $btn.click(function () {
+      var name = $name.val();
+      var url = $url.val();
+
+      $btn.attr('disabled', true);
+      $error.hide();
+      gitService.addRemote(repo, name, url)
+	.done(function () {
+	  renderRemote($table, {name:name, url:url})
+	  $name.val('');
+	  $url.val('');
+	})
+	.fail(function (error) {
+	  $error.text(error);
+	  $error.show();
+	})
+	.always(function () {
+	  $btn.attr('disabled', false);
+	});
+    });
+
+    $('<div>')
+      .append($table)
+      .append(
+	$('<div>').append($name).append($url).append($btn).append($error)
+      )
+      .appendTo($dialog);
+  }
+
+  function createRemoteDialog(dialogService, gitService, project) {
+    var dialogParams = {
+      closeOnEscape: true,
+      draggable: true,
+      modal: true,
+      width: '700'
+    };
+
+    var dialog = dialogService.createDialog('Edit Remotes', dialogParams, [
+      {
+	label: 'Close',
+	title: 'Close',
+	handler: function() { dialog.close(); }
+      }
+    ], function (dialog) {
+      var $dialog = $(dialog.getDomElement());
+      renderRemoteDialog($dialog, gitService, project);
+    });
+  }
+
   return {
     config: [
       'commands-serviceProvider', 'conditions-serviceProvider', 'menu-serviceProvider',
@@ -214,6 +315,15 @@ define([
 	    return function () {
 	      var project = projectsService.getActiveProject();
 	      createCommitDialog(dialogService, gitService, project);
+	    };
+	  }], 'activeProjectCondition');
+	commandsProvider.register(
+	  'git.remote.edit',
+	  ['dialog-service', 'git-service', 'projects-service',
+	  function (dialogService, gitService, projectsService) {
+	    return function () {
+	      var project = projectsService.getActiveProject();
+	      createRemoteDialog(dialogService, gitService, project);
 	    };
 	  }], 'activeProjectCondition');
 
@@ -228,6 +338,13 @@ define([
 	  parentId : 'git.menu',
 	  order : -1,
 	  commandId : 'git.commit'
+	});
+	menuProvider.registerMenuItem({
+	  id : 'git.remote.edit',
+	  title : 'Remotes edit',
+	  parentId : 'git.menu',
+	  order : -1,
+	  commandId : 'git.remote.edit'
 	});
       }
     ],
