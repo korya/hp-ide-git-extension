@@ -81,6 +81,18 @@ define([
     });
   }
 
+  function push(repo, remote, branch) {
+    console.log('git push:', {repo: repo, remote: remote, branch:branch});
+
+    return ajax({
+      type: 'POST',
+      url: getBaseUrl(repo) + '/push',
+      data: JSON.stringify({ remote: remote, branch: branch }),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+    });
+  }
+
   function commit(repo, message, allowEmpty) {
     var params = {
       message: message,
@@ -224,6 +236,7 @@ define([
     getLocalRepositories: getLocalRepositories,
     init: init,
     clone: clone,
+    push: push,
     getRemotes: getRemotes,
     addRemote: addRemote,
     remRemote: remRemote,
