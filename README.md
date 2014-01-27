@@ -9,7 +9,7 @@ push/pull changes from a remote GIT server.
 $ cd <IDE source>
 $ git submodule add \
     https://github.com/korya/hp-ide-git-extension.git \
-    app/extensions/hpsw/git/1.00
+    app/extensions/hpsw/git-service/1.00
 ```
 
 Tell the server to load the extension:
