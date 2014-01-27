@@ -12,11 +12,17 @@ $ git submodule add \
     app/extensions/hpsw/git/1.00
 ```
 
-Tell the server about to load the extension by adding the following line to
-`server/file-system/extensions/manifest.json`:
-```javascript
-    {"id":"git-service","version":1,"author":"hpsw"},
-```
+Tell the server to load the extension:
+ - add server side code by adding the following line to
+   `server/file-system/config-files/config.json`:
+   ```javascript
+     "git": "../app/extensions/hpsw/git-service/1.00/server"
+   ```
+ - add client side code by adding the following line to
+   `server/file-system/extensions/manifest.json`:
+   ```javascript
+     {"id":"git-service","version":1,"author":"hpsw"},
+   ```
 
 ## Details
 
