@@ -1,4 +1,4 @@
-# GIT service extension for HP Pronq IDE
+# GIT extension for HP Pronq IDE
 
 The extension provides a simple GIT service allowing: to commit changes,
 push/pull changes from a remote GIT server.
@@ -24,7 +24,7 @@ The extension consists of 2 parts:
  1. back-end running on server side and responsible for:
    - storing actual git repositories
    - providing restful API for working with GIT
-   The back-end uses: korya/node-git-rest-api
+   The back-end uses: [korya/node-git-rest-api][1]
  2. front-end running on client side:
    - simple git service with exposing only minimal necessary functionality
      (which can be easily extended)
@@ -34,3 +34,5 @@ The extension consists of 2 parts:
    - Project GIT menu allowing:
      * manage remotes
      * commit project changes
+
+[1]: https://github.com/korya/node-git-rest-api
