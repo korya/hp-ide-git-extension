@@ -24,6 +24,14 @@ Tell the server to load the extension:
      {"id":"git-service","version":1,"author":"hpsw"},
    ```
 
+In current implementattion, in addition to the installation of the extension,
+you have to add its dependencies to server's `package.json`:
+```javascript
+$ cd <IDE source>
+$ patch -p0 <app/extensions/hpsw/git-service/1.00/patch.d/00-git-dependencies.diff
+$ npm install
+```
+
 ## Details
 
 The extension consists of 2 parts:
