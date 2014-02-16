@@ -13,6 +13,8 @@ for dep in $(echo "$EXT_DEPS" | tr : '\n'); do
   curl -s "https://raw.github.com/$dep/master/install.sh" | sh 
 done
 
+[ -n "$(git submodule | grep $EXT_DIR)" ] && exit 0
+
 # Add git submodule containing the extension code
 git submodule add "$EXT_REPO" "$EXT_DIR"
 
