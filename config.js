@@ -6,12 +6,12 @@ define({
   moduleLoaders:[
     {
       id: 'git-service',
-      main: 'git-service',
+      main: 'client/git-service',
       dependencies:[]
     },
     {
       id: 'git-project-service-hooks',
-      main: 'project-service-hooks',
+      main: 'client/project-service-hooks',
       dependencies:['projects-service']
     }
   ]
