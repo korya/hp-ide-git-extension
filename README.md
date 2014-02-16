@@ -51,18 +51,16 @@ Tell the server to load the extension by adding the following line to
 `server/file-system/extensions/manifest.json`:
 
 Tell the server to load the extension:
- - add server side code by editing
-   `server/file-system/config-files/config.json`:
-   ```bash
-   $ json -I -f server/file-system/config-files/config.json \
-     -E 'this.modules["git-service"]="../app/extensions/hpsw/git-service/1.00/server"'
-   ```
- - add client side code by editing
-   `server/file-system/extensions/manifest.json`:
-   ```bash
-   $ json -I -f server/file-system/extensions/manifest.json \
-     -E 'this.defaultExtension.push({"id":"git-service","version":1,"author":"hpsw"})'
-   ```
+ - register server side code:
+```bash
+$ json -I -f server/file-system/config-files/config.json \
+  -E 'this.modules["git-service"]="../app/extensions/hpsw/git-service/1.00/server"'
+```
+ - register client side code:
+```bash
+$ json -I -f server/file-system/extensions/manifest.json \
+  -E 'this.defaultExtension.push({"id":"git-service","version":1,"author":"hpsw"})'
+```
 
 ## Details
 
