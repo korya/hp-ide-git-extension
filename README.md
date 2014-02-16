@@ -47,9 +47,6 @@ $ json -I -f package.json -E 'this.dependencies["git-rest-api"]="0.1.1"'
 $ npm install git-rest-api@0.1.1
 ```
 
-Tell the server to load the extension by adding the following line to
-`server/file-system/extensions/manifest.json`:
-
 Tell the server to load the extension:
  - register server side code:
 ```bash
